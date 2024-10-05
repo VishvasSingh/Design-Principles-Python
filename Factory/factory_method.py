@@ -1,6 +1,11 @@
 """
     Factory is a component responsible for wholesale creation of objects (not piecewise unlike Builders)
 
+    Factory method is an alternative to default initializers (__init__). It has advantages like:
+        1. The code is more readable with meaningful function and argument names
+        2. There is no complicated initialization logic in the init method
+        3. We do not violate open closed principle in case we want to add more ways to initialize an object
+
     ANY METHOD WHICH CREATES AN OBJECT IS CALLED FACTORY METHOD
 """
 
@@ -37,6 +42,9 @@ class Point:
 
     @staticmethod
     def new_cartesian_point(x, y):
+        # these kinds of methods are called factory methods, which help us initialize complete objects
+        # here we created two factory methods, one for cartesian and one for polar point, we can hence
+        # initialize the point in two different ways without complicating the init method of Point
         return Point(x, y)
 
     @staticmethod
