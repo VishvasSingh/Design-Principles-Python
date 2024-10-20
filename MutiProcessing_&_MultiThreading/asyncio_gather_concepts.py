@@ -1,5 +1,7 @@
 import asyncio
 
+semaphore = asyncio.Semaphore(5)
+
 
 async def func_1():
     a = list()
@@ -14,11 +16,22 @@ async def func_2():
     return "Hello, I had a nice sleep !!"
 
 
+async def limited_tasks(n):
+    async with semaphore:
+        print(f'Task {n} started')
+        await asyncio.sleep(1)
+        print(f'Task {n} finished')
+
+
+async def slow_task():
+    await asyncio.sleep(5)
+    return "Task Finished"
+
+
 async def main():
     """
         1. If we use return_exceptions=True then the exception is stored in the assigned variable, instead of throwing
            error and stopping the execution
-        2.
     """
     results = await asyncio.gather(func_1(), func_2(), return_exceptions=True)
     for task_no, result in enumerate(results):
@@ -28,6 +41,15 @@ async def main():
         else:
             print(f"Task result is -> {result}")
 
+    tasks = [limited_tasks(i) for i in range(10)]
+    await asyncio.gather(*tasks)
+
+    try:
+        result = await asyncio.wait_for(slow_task(), timeout=2)
+        print(result)
+
+    except asyncio.TimeoutError:
+        print("Task timed out")
 
 if __name__ == '__main__':
     asyncio.run(main())
